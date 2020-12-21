@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"github.com/inancgumus/screen"
 )
 
 func main() {
@@ -89,19 +91,47 @@ func main() {
 		"███",
 	}
 
-	digits := [10]placeholder{
+	colon := placeholder{
+		"   ",
+		" ░ ",
+		"   ",
+		" ░ ",
+		"   ",
+	}
+
+	digits := [...]placeholder{
 		zero, one, two, three, four, five, six, seven, eight, nine,
 	}
 
-	// get current time
-	now := time.Now()
-	hour, min, sec := now.Hour(), now.Minute(), now.Second()
+	screen.Clear()
 
-	for line := range digits[0] {
-		// Print a line for each placeholder in digits
-		for digit := range digits {
-			fmt.Print(digits[digit][line], "  ")
+	for {
+
+		// fmt.Print("\f")
+		screen.MoveTopLeft()
+		// get current time
+		now := time.Now()
+		hour, min, sec := now.Hour(), now.Minute(), now.Second()
+
+		clock := [...]placeholder{
+			digits[hour/10], digits[hour%10],
+			colon,
+			digits[min/10], digits[min%10],
+			colon,
+			digits[sec/10], digits[sec%10],
 		}
-		fmt.Println()
+
+		for line := range clock[0] {
+			for index, digit := range clock {
+				next := clock[index][line]
+				if digit == colon && sec%2 == 0 {
+					next = "   "
+				}
+
+				fmt.Print(next, "  ")
+			}
+			fmt.Println()
+		}
+		time.Sleep(time.Second)
 	}
 }
